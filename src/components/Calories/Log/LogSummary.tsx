@@ -1,14 +1,28 @@
 import React from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
+import { Food } from '../../../redux/actions'
+import { Feather } from '@expo/vector-icons'
+import { useNavigation } from '@react-navigation/native'
 
-const cals = { goal: 1200, food: 1200, exersize: 200 }
+interface LogSummaryProps {
+  foods: Food[]
+  goal: number | null
+}
+
 const expressions = ['-', '+', '=']
 
-const LogSummary = () => {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.heading}>Calories Remaining</Text>
-      <View style={styles.body}>
+const LogSummary: React.FC<LogSummaryProps> = ({ foods, goal }) => {
+  const navigation = useNavigation()
+  const food = foods.reduce((acc, { calories }) => acc + calories, 0)
+
+  let body
+
+  if (goal) {
+    const cals = { goal, food, exersize: 200 }
+    const remaining = cals.goal - food + cals.exersize
+
+    body = (
+      <>
         {Object.keys(cals).map((key: string, index: number) => (
           <React.Fragment {...{ key }}>
             <View style={styles.item}>
@@ -21,10 +35,38 @@ const LogSummary = () => {
           </React.Fragment>
         ))}
         <View style={styles.item}>
-          <Text style={styles.itemNumber}>1234</Text>
+          <Text
+            style={[
+              styles.itemNumber,
+              remaining < 0 ? { color: '#dc3545' } : { color: '#FF5537' }
+            ]}
+          >
+            {remaining}
+          </Text>
           <Text style={styles.itemLabel}>remaining</Text>
         </View>
-      </View>
+      </>
+    )
+  } else {
+    body = (
+      <>
+        <TouchableOpacity
+          style={{ flexDirection: 'row' }}
+          onPress={() => navigation.navigate('Goals')}
+        >
+          <Feather name='plus' style={styles.plus} />
+          <Text style={[styles.itemNumber, { color: '#FF5537' }]}>
+            You have no goal. Please add a goal.
+          </Text>
+        </TouchableOpacity>
+      </>
+    )
+  }
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.heading}>Calories Remaining</Text>
+      <View style={styles.body}>{body}</View>
     </View>
   )
 }
@@ -59,5 +101,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: 'rgba(55, 55, 55, 0.85)',
     textTransform: 'capitalize'
+  },
+  plus: {
+    fontSize: 24,
+    color: '#FF5537',
+    marginRight: 5
   }
 })

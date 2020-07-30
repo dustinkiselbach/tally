@@ -2,11 +2,12 @@ import { ActionTypes, Action, Food } from '../actions'
 
 const initialState = {
   test: false,
-  foods: []
+  foods: [],
+  error: null
 }
 
 export const caloriesReducer = (
-  state: { test: boolean; foods: Food[] } = initialState,
+  state: { test: boolean; foods: Food[]; error: string | null } = initialState,
   action: Action
 ) => {
   switch (action.type) {
@@ -18,15 +19,7 @@ export const caloriesReducer = (
     case ActionTypes.addFood:
       return {
         ...state,
-        foods: [
-          ...state.foods,
-          {
-            ...action.payload,
-            id: Math.round(new Date().getTime() / 1000),
-            date: new Date(),
-            calories: parseInt(action.payload.calories)
-          }
-        ]
+        foods: action.payload
       }
     case ActionTypes.updateFood:
       return {
@@ -46,7 +39,11 @@ export const caloriesReducer = (
         ...state,
         foods: state.foods.filter(({ id }) => id !== action.payload)
       }
-
+    case ActionTypes.foodError:
+      return {
+        ...state,
+        error: action.payload
+      }
     default:
       return state
   }

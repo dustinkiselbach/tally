@@ -5,11 +5,16 @@ import { createStackNavigator } from '@react-navigation/stack'
 import { StyleSheet } from 'react-native'
 import { LoadAssets, TabBarIcon } from './src/components'
 import { LinearGradient } from 'expo-linear-gradient'
-import { Log, Add, Update } from './src/components/Calories'
-import index from './src/components/Goals'
-import { CaloriesStackParamList } from './src/types/Types'
+import {
+  Log as LogCalories,
+  Add as AddCalories,
+  Update as UpdateCalories
+} from './src/components/Calories'
+import { Log as LogGoals } from './src/components/Goals'
+import { CaloriesStackParamList } from './src/types/caloriesTypes'
 import { Provider } from 'react-redux'
 import { store } from './src/redux/store'
+import { GoalsStackParamList } from './src/types/goalsTypes'
 
 const fonts = {
   'Poppins-Bold': require('./assets/fonts/Poppins-Bold.ttf'),
@@ -39,21 +44,40 @@ const CaloriesStackScreen = () => {
     >
       <CaloriesStack.Screen
         name='Log'
-        component={Log}
+        component={LogCalories}
         options={{ title: 'Tally' }}
       />
-      <CaloriesStack.Screen name='Add' component={Add} />
-      <CaloriesStack.Screen name='Update' component={Update} />
+      <CaloriesStack.Screen name='Add' component={AddCalories} />
+      <CaloriesStack.Screen name='Update' component={UpdateCalories} />
     </CaloriesStack.Navigator>
   )
 }
 
-const GoalsStack = createStackNavigator()
+const GoalsStack = createStackNavigator<GoalsStackParamList>()
 
 const GoalsStackScreen = () => {
   return (
-    <GoalsStack.Navigator>
-      <GoalsStack.Screen name='Goals' component={index} />
+    <GoalsStack.Navigator
+      screenOptions={{
+        headerTintColor: '#373737',
+        headerTitleStyle: {
+          fontFamily: 'Poppins-Medium',
+          fontSize: 30,
+          color: '#373737'
+        },
+        headerBackground: () => (
+          <LinearGradient
+            colors={['#6DCBE0', '#57FFBF']}
+            style={StyleSheet.absoluteFill}
+          />
+        )
+      }}
+    >
+      <GoalsStack.Screen
+        name='Log'
+        component={LogGoals}
+        options={{ title: 'Goals' }}
+      />
     </GoalsStack.Navigator>
   )
 }

@@ -1,17 +1,15 @@
-import React from 'react'
+import React, { Dispatch, SetStateAction } from 'react'
 import { StyleSheet, TouchableOpacity } from 'react-native'
 import { Feather } from '@expo/vector-icons'
 import { LinearGradient } from 'expo-linear-gradient'
-import { useNavigation } from '@react-navigation/native'
 
-const AddButton = () => {
-  const navigation = useNavigation()
+interface AddButtonProps {
+  onClick: Dispatch<SetStateAction<boolean>>
+}
 
+const AddButton: React.FC<AddButtonProps> = ({ onClick }) => {
   return (
-    <TouchableOpacity
-      style={styles.button}
-      onPress={() => navigation.navigate('Add')}
-    >
+    <TouchableOpacity style={styles.button} onPress={() => onClick(true)}>
       <LinearGradient
         colors={['#6DCBE0', '#57FFBF']}
         style={[StyleSheet.absoluteFill, styles.gradient]}
@@ -35,6 +33,6 @@ const styles = StyleSheet.create({
     padding: 16
   },
   gradient: {
-    borderRadius: 50
+    borderRadius: 100
   }
 })

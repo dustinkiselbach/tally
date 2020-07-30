@@ -1,7 +1,7 @@
 import React from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import { EntryForm } from '../..'
-import { UpdateProps } from '../../../types/Types'
+import { UpdateProps } from '../../../types/caloriesTypes'
 import { connect } from 'react-redux'
 import { updateFood, Food } from '../../../redux/actions'
 import { StoreState } from '../../../redux/reducers'

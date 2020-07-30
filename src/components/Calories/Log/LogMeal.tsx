@@ -3,10 +3,14 @@ import { StyleSheet, Text, View, TouchableOpacity, Alert } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import { Feather } from '@expo/vector-icons'
 import { useNavigation } from '@react-navigation/native'
-import { Food, deleteFood } from '../../../redux/actions'
+import { Food, deleteFood, Meal } from '../../../redux/actions'
+import {
+  UpdateScreenNavigationProp,
+  AddScreenNavigationProp
+} from '../../../types/caloriesTypes'
 
 interface LogMealProps {
-  meal: string
+  meal: Meal
   foods: Food[]
   deleteFood: typeof deleteFood
 }
@@ -26,7 +30,9 @@ const LogMeal: React.FC<LogMealProps> = ({ meal, foods, deleteFood }) => {
       ]
     )
 
-  const navigation = useNavigation()
+  const navigation = useNavigation<
+    UpdateScreenNavigationProp | AddScreenNavigationProp
+  >()
   // calculating total cals for meal
   const totalCals = foods.reduce((acc, { calories }) => acc + calories, 0)
 
@@ -57,14 +63,15 @@ const LogMeal: React.FC<LogMealProps> = ({ meal, foods, deleteFood }) => {
             ))}
           </>
         ) : null}
-        <View style={styles.addFood}>
-          <TouchableOpacity
-            onPress={() => navigation.navigate('Add', { meal })}
-          >
-            <Feather name='plus' style={styles.plus} />
-          </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.addFood}
+          onPress={() => navigation.navigate('Add', { meal })}
+        >
+          <Feather name='plus' style={styles.plus} />
+
           <Text style={styles.body}>Add Food</Text>
-        </View>
+        </TouchableOpacity>
       </View>
     </View>
   )
