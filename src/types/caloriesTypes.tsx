@@ -3,8 +3,8 @@ import { Meal } from '../redux/actions'
 
 export type CaloriesStackParamList = {
   Log: undefined
-  Add: { meal: Meal }
-  Update: { id: number }
+  Add: { entryCategory: Meal | 'excersizes' }
+  Update: { id: number; excersize?: boolean }
 }
 
 type AddScreenRouteProp = RouteProp<CaloriesStackParamList, 'Add'>

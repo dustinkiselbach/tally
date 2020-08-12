@@ -1,25 +1,30 @@
 import React from 'react'
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
-import { Food } from '../../../redux/actions'
+import { Food, Excersize } from '../../../redux/actions'
 import { Feather } from '@expo/vector-icons'
 import { useNavigation } from '@react-navigation/native'
 
 interface LogSummaryProps {
   foods: Food[]
+  excersizes: Excersize[]
   goal: number | null
 }
 
 const expressions = ['-', '+', '=']
 
-const LogSummary: React.FC<LogSummaryProps> = ({ foods, goal }) => {
+const LogSummary: React.FC<LogSummaryProps> = ({ foods, excersizes, goal }) => {
   const navigation = useNavigation()
   const food = foods.reduce((acc, { calories }) => acc + calories, 0)
+  const excersize = excersizes.reduce(
+    (acc, { caloriesBurned }) => acc + caloriesBurned,
+    0
+  )
 
   let body
 
   if (goal) {
-    const cals = { goal, food, exersize: 200 }
-    const remaining = cals.goal - food + cals.exersize
+    const cals = { goal, food, excersize }
+    const remaining = cals.goal - food + cals.excersize
 
     body = (
       <>

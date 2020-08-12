@@ -3,36 +3,60 @@ import { StyleSheet, Text, View } from 'react-native'
 import { EntryForm } from '../..'
 import { UpdateProps } from '../../../types/caloriesTypes'
 import { connect } from 'react-redux'
-import { updateFood, Food } from '../../../redux/actions'
+import {
+  updateFood,
+  Food,
+  updateExcersize,
+  Excersize
+} from '../../../redux/actions'
 import { StoreState } from '../../../redux/reducers'
 
 interface _UpdateProps extends UpdateProps {
   updateFood: typeof updateFood
+  updateExcersize: typeof updateExcersize
   foods: Food[]
+  excersizes: Excersize[]
 }
 
 const Update: React.FC<_UpdateProps> = ({
   route,
   navigation,
   updateFood,
-  foods
+  updateExcersize,
+  foods,
+  excersizes
 }) => {
   // Basically fetching food
-  const foundFood = foods.find(food => food.id === route.params.id)
+  const found: any = route.params.excersize
+    ? excersizes.find(excersize => excersize.id === route.params.id)
+    : foods.find(food => food.id === route.params.id)
 
-  if (foundFood) {
+  if (found) {
     return (
       <View>
-        <EntryForm
-          meal={foundFood.meal}
-          onSubmit={(food: { name: string; calories: string }) =>
-            updateFood(foundFood.id, food, () => navigation.goBack())
-          }
-          initialValues={{
-            name: foundFood.name,
-            calories: foundFood.calories.toString()
-          }}
-        />
+        {route.params.excersize ? (
+          <>
+            <EntryForm
+              entryCategory={'excersizes'}
+              onSubmit={(excersize: { type: string; caloriesBurned: string }) =>
+                updateExcersize(found.id, excersize, () => navigation.goBack())
+              }
+            />
+          </>
+        ) : (
+          <>
+            <EntryForm
+              entryCategory={found.meal}
+              onSubmit={(food: { name: string; calories: string }) =>
+                updateFood(found.id, food, () => navigation.goBack())
+              }
+              initialValues={{
+                name: found.name,
+                calories: found.calories.toString()
+              }}
+            />
+          </>
+        )}
       </View>
     )
   } else {
@@ -40,10 +64,10 @@ const Update: React.FC<_UpdateProps> = ({
   }
 }
 
-const mapStateToProps = ({ calories: { foods } }: StoreState) => {
-  return { foods }
+const mapStateToProps = ({ calories: { foods, excersizes } }: StoreState) => {
+  return { foods, excersizes }
 }
 
-export default connect(mapStateToProps, { updateFood })(Update)
+export default connect(mapStateToProps, { updateFood, updateExcersize })(Update)
 
 const styles = StyleSheet.create({})

@@ -5,20 +5,20 @@ import { TouchableOpacity } from 'react-native-gesture-handler'
 import { LinearGradient } from 'expo-linear-gradient'
 
 interface EntryFormProps {
-  meal: Meal
+  entryCategory: Meal | 'excersizes'
   onSubmit: (food: any) => any
   initialValues?: { name: string; calories: string }
 }
 
 const EntryForm: React.FC<EntryFormProps> = ({
-  meal,
+  entryCategory,
   onSubmit,
   initialValues
 }) => {
   const [newMeal, setNewMeal] = useState({
     name: initialValues!.name,
     calories: initialValues!.calories,
-    meal
+    meal: entryCategory
   })
 
   return (
@@ -35,7 +35,9 @@ const EntryForm: React.FC<EntryFormProps> = ({
       />
       <TouchableOpacity
         onPress={() => {
-          onSubmit(newMeal)
+          entryCategory === 'excersizes'
+            ? onSubmit({ type: newMeal.name, caloriesBurned: newMeal.calories })
+            : onSubmit(newMeal)
         }}
       >
         <LinearGradient

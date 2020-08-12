@@ -2,7 +2,10 @@ import { ActionTypes, ThunkResult } from './types'
 import {
   deleteFoodFromStorage,
   updateFoodInStorage,
-  addFoodToStorage
+  addFoodToStorage,
+  addExcersizeToStorage,
+  deleteExcersizeFromStorage,
+  updateExcersizeInStorage
 } from '../../api/asyncStorage'
 import AsyncStorage from '@react-native-community/async-storage'
 
@@ -16,7 +19,7 @@ export interface Food {
   id: number
 }
 
-export interface Exersize {
+export interface Excersize {
   type: string
   caloriesBurned: number
   date: Date
@@ -32,9 +35,18 @@ export interface AddFoodAction {
   payload: Food[]
 }
 
+export interface AddExcersizeAction {
+  type: ActionTypes.addExcersize
+  payload: Excersize[]
+}
+
 export interface UpdateFoodAction {
   type: ActionTypes.updateFood
   payload: { id: number; food: { name: string; calories: string } }
+}
+export interface UpdateExcersizeAction {
+  type: ActionTypes.updateExcersize
+  payload: { id: number; excersize: { type: string; caloriesBurned: string } }
 }
 
 export interface DeleteFoodAction {
@@ -42,8 +54,13 @@ export interface DeleteFoodAction {
   payload: number
 }
 
-export interface FoodErrorAction {
-  type: ActionTypes.foodError
+export interface DeleteExcersizeAction {
+  type: ActionTypes.deleteExcersize
+  payload: number
+}
+
+export interface EntryErrorAction {
+  type: ActionTypes.entryError
   payload: string | null
 }
 
@@ -111,12 +128,12 @@ export const addFood = (
     callback()
   } catch (err) {
     dispatch({
-      type: ActionTypes.foodError,
+      type: ActionTypes.entryError,
       payload: err.message
     })
     setTimeout(() => {
       dispatch({
-        type: ActionTypes.foodError,
+        type: ActionTypes.entryError,
         payload: null
       })
     }, 2000)
@@ -169,19 +186,86 @@ export const getFoods = (): ThunkResult<void> => async dispatch => {
   }
 }
 
-// export const addExcersize = (excersize: {
-//   type: string
-//   caloriesBurned: string
-// }): ThunkResult<void> => async dispatch => {
-//   try {
-//     const foodToAdd = {
-//       ...excersize,
-//       caloriesBurned: parseInt(excersize.caloriesBurned),
-//       date: new Date(),
-//       id: Math.round(new Date().getTime() / 1000)
-//     }
-//     // const foodsArr = await addFoodToStorage(foodToAdd)
-//   } catch (err) {
-//     throw err
-//   }
-// }
+export const addExcersize = (
+  excersize: {
+    type: string
+    caloriesBurned: string
+  },
+  callback: () => void
+): ThunkResult<void> => async dispatch => {
+  try {
+    const excersizeToAdd = {
+      ...excersize,
+      date: new Date(),
+      id: Math.round(new Date().getTime() / 1000)
+    }
+
+    const excersizesArr = await addExcersizeToStorage(excersizeToAdd)
+    console.log(excersizesArr)
+    dispatch({
+      type: ActionTypes.addExcersize,
+      payload: excersizesArr
+    })
+    callback()
+  } catch (err) {
+    dispatch({
+      type: ActionTypes.entryError,
+      payload: err.message
+    })
+    setTimeout(() => {
+      dispatch({
+        type: ActionTypes.entryError,
+        payload: null
+      })
+    }, 2000)
+    throw err
+  }
+}
+
+export const getExcersizes = (): ThunkResult<void> => async dispatch => {
+  try {
+    const res = await AsyncStorage.getItem('excersizes')
+    if (res) {
+      const excersizesArr: Excersize[] = JSON.parse(res)
+      dispatch({
+        type: ActionTypes.addExcersize,
+        payload: excersizesArr
+      })
+    }
+  } catch (err) {
+    throw err
+  }
+}
+
+export const deleteExcersize = (
+  id: number
+): ThunkResult<void> => async dispatch => {
+  try {
+    await deleteExcersizeFromStorage(id)
+    dispatch({
+      type: ActionTypes.deleteExcersize,
+      payload: id
+    })
+  } catch (err) {
+    throw err
+  }
+}
+
+// TODO need error handling
+export const updateExcersize = (
+  id: number,
+  excersize: { type: string; caloriesBurned: string },
+  callback: () => void
+): ThunkResult<void> => async dispatch => {
+  try {
+    await updateExcersizeInStorage(id, excersize)
+
+    dispatch({
+      type: ActionTypes.updateExcersize,
+      payload: { id, excersize }
+    })
+    callback()
+  } catch (err) {
+    throw err
+  }
+}

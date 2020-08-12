@@ -1,13 +1,19 @@
-import { ActionTypes, Action, Food } from '../actions'
+import { ActionTypes, Action, Food, Excersize } from '../actions'
 
 const initialState = {
   test: false,
   foods: [],
+  excersizes: [],
   error: null
 }
 
 export const caloriesReducer = (
-  state: { test: boolean; foods: Food[]; error: string | null } = initialState,
+  state: {
+    test: boolean
+    foods: Food[]
+    excersizes: Excersize[]
+    error: string | null
+  } = initialState,
   action: Action
 ) => {
   switch (action.type) {
@@ -20,6 +26,11 @@ export const caloriesReducer = (
       return {
         ...state,
         foods: action.payload
+      }
+    case ActionTypes.addExcersize:
+      return {
+        ...state,
+        excersizes: action.payload
       }
     case ActionTypes.updateFood:
       return {
@@ -34,12 +45,33 @@ export const caloriesReducer = (
             : food
         )
       }
+    case ActionTypes.updateExcersize:
+      console.log(action.payload)
+      return {
+        ...state,
+        excersizes: state.excersizes.map(excersize =>
+          excersize.id === action.payload.id
+            ? {
+                ...excersize,
+                type: action.payload.excersize.type,
+                caloriesBurned: parseInt(
+                  action.payload.excersize.caloriesBurned
+                )
+              }
+            : excersize
+        )
+      }
     case ActionTypes.deleteFood:
       return {
         ...state,
         foods: state.foods.filter(({ id }) => id !== action.payload)
       }
-    case ActionTypes.foodError:
+    case ActionTypes.deleteExcersize:
+      return {
+        ...state,
+        excersizes: state.excersizes.filter(({ id }) => id !== action.payload)
+      }
+    case ActionTypes.entryError:
       return {
         ...state,
         error: action.payload

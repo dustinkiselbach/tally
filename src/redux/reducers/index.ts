@@ -1,12 +1,13 @@
 import { combineReducers } from 'redux'
 import { caloriesReducer } from './calories'
 import { goalsReducer } from './goals'
-import { Food } from '../actions'
+import { Food, Excersize } from '../actions'
 
 export interface StoreState {
   calories: {
     test: boolean
     foods: Food[]
+    excersizes: Excersize[]
     error: string | null
   }
   goals: {

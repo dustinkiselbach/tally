@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-community/async-storage'
-import { Food, Meal } from '../redux/actions'
+import { Food, Meal, Excersize } from '../redux/actions'
 import { isInteger } from '../utils'
 
 export const deleteFoodFromStorage = async (id: number): Promise<void> => {
@@ -79,4 +79,76 @@ export const addFoodToStorage = async (foodToAdd: {
       return reject(new Error('Please enter a number'))
     }
   })
+}
+
+export const addExcersizeToStorage = async (excersizeToAdd: {
+  type: string
+  caloriesBurned: string
+  date: Date
+  id: number
+}) => {
+  if (isInteger(excersizeToAdd.caloriesBurned)) {
+    const Excersizes = await AsyncStorage.getItem('excersizes')
+    const _excersizeToAdd: Excersize = {
+      ...excersizeToAdd,
+      caloriesBurned: parseInt(excersizeToAdd.caloriesBurned)
+    }
+    if (Excersizes) {
+      let excersizesArr: Excersize[] = JSON.parse(Excersizes)
+      excersizesArr.push(_excersizeToAdd)
+      await AsyncStorage.setItem('excersizes', JSON.stringify(excersizesArr))
+      return excersizesArr
+    } else {
+      let newExcersizesArr: Excersize[] = [_excersizeToAdd]
+      await AsyncStorage.setItem('excersizes', JSON.stringify(newExcersizesArr))
+      return newExcersizesArr
+    }
+  } else {
+    throw new Error('Please enter a number')
+  }
+}
+
+export const deleteExcersizeFromStorage = async (id: number) => {
+  const Excersizes = await AsyncStorage.getItem('excersizes')
+  if (Excersizes) {
+    let excersizesArr: Excersize[] = JSON.parse(Excersizes)
+    await AsyncStorage.setItem(
+      'excersizes',
+      JSON.stringify(
+        excersizesArr.filter(excersizeItem => excersizeItem.id !== id)
+      )
+    )
+  } else {
+    throw new Error('You have no excersizes stored')
+  }
+}
+
+export const updateExcersizeInStorage = async (
+  id: number,
+  excersize: { type: string; caloriesBurned: string }
+) => {
+  const Excersizes = await AsyncStorage.getItem('excersizes')
+  if (Excersizes) {
+    if (isInteger(excersize.caloriesBurned)) {
+      let excersizesArr: Excersize[] = JSON.parse(Excersizes)
+      await AsyncStorage.setItem(
+        'excersizes',
+        JSON.stringify(
+          excersizesArr.map(excersizeItem =>
+            excersizeItem.id === id
+              ? {
+                  ...excersizeItem,
+                  type: excersize.type,
+                  caloriesBurned: parseInt(excersize.caloriesBurned)
+                }
+              : excersizeItem
+          )
+        )
+      )
+    } else {
+      throw new Error('Please enter a number')
+    }
+  } else {
+    throw new Error('You have no excersizes')
+  }
 }
